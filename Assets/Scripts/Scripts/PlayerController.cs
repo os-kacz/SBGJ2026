@@ -3,9 +3,11 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Movement Settings")]
     public float walkSpeed = 5f;
     public float sprintSpeed = 8f;
     public float lookSensitivity = 0.1f;
+    public float jumpForce = 1f;
     public float gravity = -9.81f;
 
     private CharacterController controller;
@@ -37,6 +39,12 @@ public class PlayerController : MonoBehaviour
         verticalRotation = Mathf.Clamp(verticalRotation, -90f, 90f);
         playerCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
         transform.Rotate(Vector3.up * lookX);
+
+        // Jumping
+        if(InputSystem.actions["Jump"].triggered && controller.isGrounded)
+        {
+            velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
+        }
 
         // Crouching
         bool isCrouching = InputSystem.actions["Crouch"].ReadValue<float>() > 0.1f;
