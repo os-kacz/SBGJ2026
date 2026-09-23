@@ -1,7 +1,12 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class PlantLogic : MonoBehaviour
 {
+
+    // animation and AI
+    private NavMeshAgent agent;
+    private Animator animator;
 
     // hunger variables
     private float hunger  = 0f;
@@ -11,13 +16,12 @@ public class PlantLogic : MonoBehaviour
     private float maxHunger = 100f;
     [SerializeField]
     private float hungerDecayRate = 0.5f; // Hunger decay rate per second
-
+    
 
     // item management variables
     [SerializeField]
     private float timeBetweenEvents = 10f; // Time between events in seconds
     private float timeSinceLastEvent = 0f; // Time since the last event occurred
-
     private float currentGrowth = 1f;
     private Transform plantTransform;
 
@@ -28,7 +32,8 @@ public class PlantLogic : MonoBehaviour
     {
         hunger = startingHunger;
         plantTransform = GetComponent<Transform>();
-        
+        agent = GetComponent<NavMeshAgent>();
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -51,6 +56,18 @@ public class PlantLogic : MonoBehaviour
             TriggerEventChooser();
         }
 
+        animator.SetFloat("Velocity", ((uint)agent.velocity.magnitude));
+
+        if (agent.remainingDistance <= agent.stoppingDistance)
+        {
+            Vector3 randomLocation;
+
+            if (RandomPoint(transform.position, 10f, out randomLocation))
+            {
+                Debug.DrawRay(randomLocation, Vector3.up, Color.blue, 1.0f);
+                agent.SetDestination(randomLocation);
+            }
+        }
 
     }
     
@@ -101,5 +118,17 @@ public class PlantLogic : MonoBehaviour
         // Reset the timer
         timeSinceLastEvent = 0f;
         
+    }
+
+    bool RandomPoint(Vector3 center, float range, out Vector3 result)
+    {
+        if (NavMesh.SamplePosition(center + Random.insideUnitSphere * range, out NavMeshHit hit, 1.0f, NavMesh.AllAreas))
+        {
+            result = hit.position;
+            return true;
+        }
+
+        result = Vector3.zero;
+        return false;
     }
 }
