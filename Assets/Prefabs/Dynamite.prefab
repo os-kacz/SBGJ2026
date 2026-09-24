@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1297853888854732136}
   - component: {fileID: 7488315304273013798}
   - component: {fileID: 2913360254405991743}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Dynamite
   m_TagString: Item
   m_Icon: {fileID: 0}
@@ -154,3 +154,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemPickup
   itemData: {fileID: 11400000, guid: 79060efdb7a1a774cb9a66ef33949be7, type: 2}
+  beingConsumed: 0

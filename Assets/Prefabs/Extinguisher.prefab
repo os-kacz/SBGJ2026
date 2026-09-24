@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8257551574203389214}
   - component: {fileID: 8590894714020043430}
   - component: {fileID: 7234703254988654960}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Extinguisher
   m_TagString: Item
   m_Icon: {fileID: 0}

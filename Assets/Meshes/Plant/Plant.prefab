@@ -259,12 +259,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcebdcecea5f68a4db46e4c647dadf4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlantLogic
+  hunger: 10
   startingHunger: 10
   maxHunger: 100
   hungerDecayRate: 0.5
   timeBetweenEvents: 10
+  abilityObjects:
+  - {fileID: 5764552208672890076, guid: aa00bdc56a200c744b973a1d9d96b1a3, type: 3}
+  - {fileID: 5681526016984425532, guid: 13bc8d95730397c41a7ad01bc2f8a9e9, type: 3}
+  - {fileID: 7529941621408070527, guid: 39bb7f0462937eb408491d6b85602a9e, type: 3}
+  abilityActives: 
   mouthPosition: {fileID: 8608854130057801022}
   playerPickup: {fileID: 0}
+  hungerBar: {fileID: 0}
 --- !u!95 &7572626070621668869
 Animator:
   serializedVersion: 7

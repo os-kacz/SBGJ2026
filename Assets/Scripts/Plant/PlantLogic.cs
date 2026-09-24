@@ -1,5 +1,11 @@
+using System.Collections.Generic;
+using NUnit.Framework;
+using Unity.Burst.CompilerServices;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class PlantLogic : MonoBehaviour
 {
@@ -11,26 +17,34 @@ public class PlantLogic : MonoBehaviour
     private PlantState plantState;
 
     // hunger variables
-    private float hunger  = 0f;
+    [SerializeField]
+    private float hunger  = 10f;
     [SerializeField]
     private float startingHunger = 10f;
     [SerializeField]
     private float maxHunger = 100f;
     [SerializeField]
-    private float hungerDecayRate = 0.5f; // Hunger decay rate per second
+    private float hungerDecayRate = 0.25f; // Hunger decay rate per second
     
 
     // item management variables
     [SerializeField]
     private float timeBetweenEvents = 10f; // Time between events in seconds
+    [SerializeField]
     private float timeSinceLastEvent = 0f; // Time since the last event occurred
     private float currentGrowth = 0.25f;
+
+    private bool hasEatItem = false;
+    
+    [SerializeField]
+    private GameObject[] abilityObjects;
+    [SerializeField]
+    private bool[] abilityActives; 
+
     private Transform plantTransform;
 
     [SerializeField]
     public Transform mouthPosition;
-
-    private int randomEventsNumber = 5;
 
     [SerializeField]
     private PlayerPickup playerPickup;
@@ -39,6 +53,14 @@ public class PlantLogic : MonoBehaviour
 
     private float currentEatTime = 0.0f;
 
+    private bool shouldUpdate = true;
+
+    private GameManager gameManager;
+
+    [SerializeField]
+    private Image hungerBar;
+
+    private PlayerHealth playerHealth;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -47,19 +69,23 @@ public class PlantLogic : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
         plantState = PlantState.Idle;
+        gameManager = FindAnyObjectByType<GameManager>();
+        abilityActives = new bool[abilityObjects.Length];
+        playerHealth = FindAnyObjectByType<PlayerHealth>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        hunger = Mathf.Clamp(hunger - (Time.deltaTime * hungerDecayRate), 0f, maxHunger);
-
         // update UI or any other systems that depend on hunger value
-
-
+        
+        if (shouldUpdate == false)
+        {
+            return;
+        }
 
         // event logic
-        timeSinceLastEvent += Time.deltaTime;
+        timeSinceLastEvent += 1 * Time.deltaTime;
 
         if (timeSinceLastEvent >= timeBetweenEvents)
         {
@@ -67,7 +93,6 @@ public class PlantLogic : MonoBehaviour
 
             TriggerEventChooser();
         }
-
 
         // plant AI states
 
@@ -120,8 +145,41 @@ public class PlantLogic : MonoBehaviour
         animator.SetFloat("Velocity", ((uint)agent.velocity.magnitude));
 
     }
-    
-   public void OnItemConsumed(ItemPickup itemScript, GameObject itemObject) //Replace with the scriptable object and the item script
+
+    void LateUpdate()
+    {
+
+        if (!shouldUpdate)
+        {
+            return;
+        }
+
+        if (hunger <= 0)
+        {
+            shouldUpdate = false;
+            plantState = PlantState.Idle;
+            gameManager.GameOver();
+            animator.SetInteger("State", ((int)plantState));
+
+            return;
+        }
+        else if (hunger >= maxHunger)
+        {
+            shouldUpdate = false;
+            plantState = PlantState.Idle;
+            gameManager.GameWin();
+            animator.SetInteger("State", ((int)plantState));
+
+            return;       
+        }
+
+        hunger -= hungerDecayRate * Time.deltaTime;
+        hunger = Mathf.Clamp(hunger, 0, maxHunger + 5);
+        hungerBar.fillAmount = hunger / maxHunger;
+
+    }
+
+    public void OnItemConsumed(ItemPickup itemScript, GameObject itemObject) //Replace with the scriptable object and the item script
     {
 
         if (playerPickup == null || itemScript == null)
@@ -137,8 +195,20 @@ public class PlantLogic : MonoBehaviour
         Debug.Log("Eating");
         plantState = PlantState.Eating;
 
+        Debug.Log(itemScript.itemData.abilityType);
         // Enum switch case for item types
-
+        switch (itemScript.itemData.abilityType)
+        {
+            case AbilityType.Fire:
+                abilityActives[0] = true;
+                break;
+            case AbilityType.Electric:
+                abilityActives[1] = true;
+                break;
+            case AbilityType.Explosive:
+                abilityActives[2] = true;
+                break;
+        }
 
         // shrink the item object to indicate it has been consumed
         // call an event on the item script to start this process, also take in speed to lerp
@@ -162,8 +232,17 @@ public class PlantLogic : MonoBehaviour
 
         increaseGrowth(itemScript.itemData.growthRate);
 
-        timeBetweenEvents = itemScript.itemData.abilityRate;
+        timeBetweenEvents *= itemScript.itemData.abilityRate;
 
+        if (!hasEatItem)
+        {
+            hasEatItem = true;
+        }
+
+        if (playerHealth != null)
+        {
+            playerHealth.TakeDamage(10);
+        }
     }
 
     void increaseGrowth(float growthValue)
@@ -175,9 +254,10 @@ public class PlantLogic : MonoBehaviour
 
     void increaseHunger(float hungerValue)
     {
-        hunger = Mathf.Clamp(hunger + hungerValue, 0f, maxHunger);
+        hunger = hunger + hungerValue;
+        hunger = Mathf.Clamp(hunger, 0f, maxHunger + 5.0f);
         // update UI or any other systems that depend on hunger value
-
+        hungerBar.fillAmount = hunger / maxHunger;
 
 
         Debug.Log("Hunger: " + hunger);
@@ -188,7 +268,24 @@ public class PlantLogic : MonoBehaviour
         
         // randomly choose an event
 
-        int randomNumber = Random.Range(0, randomEventsNumber - 1);
+        if (hasEatItem && abilityObjects.Length != 0)
+        {
+            bool found = false;
+            int loopProtect = 0;
+            while (found == false && loopProtect < 10)
+            {
+                int randAbility = Random.Range(0, abilityObjects.Length);
+
+                if (abilityActives[randAbility] == true)
+                {
+                    GameObject spawnedObject = Instantiate(abilityObjects[randAbility]);
+                    spawnedObject.transform.position = transform.position;
+                    found = true;
+                    break;
+                }
+                loopProtect++;
+            }
+        }
         
 
         // Reset the timer

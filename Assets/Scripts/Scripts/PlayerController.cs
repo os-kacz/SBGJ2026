@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private float verticalRotation = 0f;
     private Vector3 velocity;
 
+    [SerializeField]
     private Rigidbody rb;
 
     // Crouching
@@ -27,7 +28,6 @@ public class PlayerController : MonoBehaviour
         controller = GetComponent<CharacterController>();
         playerCamera = GetComponentInChildren<Camera>();
         originalHeight = controller.height;
-        rb = GetComponent<Rigidbody>();
         Cursor.lockState = CursorLockMode.Locked;
     }
 
@@ -86,6 +86,6 @@ public class PlayerController : MonoBehaviour
     public void ApplyKnockback(Vector3 explosionPoint)
     {
         rb.linearVelocity = Vector3.zero; // Reset current velocity
-        rb.AddExplosionForce(10f, explosionPoint, 200f, 2.5f, ForceMode.Impulse);
+        rb.AddExplosionForce(1000f, explosionPoint, 200f, 100f, ForceMode.Impulse);
     }
 }

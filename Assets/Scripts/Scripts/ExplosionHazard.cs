@@ -33,6 +33,7 @@ public class ExplosionHazard : MonoBehaviour
                 PlayerController playerController = hit.GetComponent<PlayerController>();
                 if (playerController != null)
                 {
+                    Debug.Log("Knockback");
                     playerController.ApplyKnockback(transform.position);
                 }
             }

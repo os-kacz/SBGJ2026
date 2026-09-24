@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 810586025418900988}
   - component: {fileID: 6272714391412417242}
   - component: {fileID: 4677394536842464968}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Toaster
   m_TagString: Item
   m_Icon: {fileID: 0}
@@ -154,3 +154,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemPickup
   itemData: {fileID: 11400000, guid: 2b72c126288b7204f9523d905740a3d5, type: 2}
+  beingConsumed: 0

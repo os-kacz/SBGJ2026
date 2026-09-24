@@ -33,7 +33,7 @@ public class PlayerHealth : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
-        gameManager = FindObjectOfType<GameManager>();
+        gameManager = FindAnyObjectByType<GameManager>();
     }
 
     public void TakeDamage(int damage)
