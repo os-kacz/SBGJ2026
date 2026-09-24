@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Extinguisher
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Extinguisher
-  growthRate: 1
+  growthRate: 1.1
+  hungerRate: 10
   abilityRate: 0.9
   abilityType: 3

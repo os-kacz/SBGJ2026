@@ -22,12 +22,11 @@ public class PlayerPickup : MonoBehaviour
             else DropItem();
         }
 
-        if (InputSystem.actions["Throw"].triggered && heldItem != null)
+        if (InputSystem.actions["Throw"].WasPressedThisFrame() && heldItem != null)
         {
             ThrowItem();
         }
     }
-
     void TryPickup()
     {
         RaycastHit hit;
@@ -68,13 +67,18 @@ public class PlayerPickup : MonoBehaviour
 
     }
 
-    void DropItem()
+    public void DropItem()
     {
         heldItem.transform.SetParent(null);
         heldItemRb.isKinematic = false;
         heldItemRb.useGravity = true;
         heldItem = null;
         heldItemRb = null;
+    }
+
+    public GameObject GetHeldItemData()
+    {
+        return heldItem;
     }
 
 }
