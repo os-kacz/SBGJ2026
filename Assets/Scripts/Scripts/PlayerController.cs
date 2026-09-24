@@ -15,8 +15,6 @@ public class PlayerController : MonoBehaviour
     private float verticalRotation = 0f;
     private Vector3 velocity;
 
-    private Rigidbody rb;
-
     // Crouching
     private float originalHeight;
     public float crouchHeight = 1f;
@@ -27,7 +25,6 @@ public class PlayerController : MonoBehaviour
         controller = GetComponent<CharacterController>();
         playerCamera = GetComponentInChildren<Camera>();
         originalHeight = controller.height;
-        rb = GetComponent<Rigidbody>();
         Cursor.lockState = CursorLockMode.Locked;
     }
 
@@ -67,25 +64,5 @@ public class PlayerController : MonoBehaviour
         if (controller.isGrounded && velocity.y < 0) velocity.y = -2f;
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
-    }
-
-    public void SetSlow(bool isSlowed)
-    {
-        if (isSlowed)
-        {
-            walkSpeed = 1.5f; // Reduced speed when slowed
-            sprintSpeed = 3f; // Reduced sprint speed when slowed
-        }
-        else
-        {
-            walkSpeed = 5f; // Reset to normal speed
-            sprintSpeed = 8f; // Reset to normal sprint speed
-        }
-    }
-
-    public void ApplyKnockback(Vector3 explosionPoint)
-    {
-        rb.linearVelocity = Vector3.zero; // Reset current velocity
-        rb.AddExplosionForce(10f, explosionPoint, 200f, 2.5f, ForceMode.Impulse);
     }
 }
