@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
     [Header("UI Panels")]
     public GameObject gameOverPanel;
     public GameObject winPanel;
+    public GameObject HUDPanel;
 
     private bool isGameOver = false;
 
@@ -13,6 +14,7 @@ public class GameManager : MonoBehaviour
     {
         if (gameOverPanel) gameOverPanel.SetActive(false);
         if (winPanel) winPanel.SetActive(false);
+        if(HUDPanel) HUDPanel.SetActive(true);
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -22,6 +24,7 @@ public class GameManager : MonoBehaviour
     {
         if(isGameOver) return;
         isGameOver = true;
+        if (HUDPanel) HUDPanel.SetActive(false);
         if (gameOverPanel) gameOverPanel.SetActive(true);
         EndGameState();
     }
@@ -30,6 +33,7 @@ public class GameManager : MonoBehaviour
     {
         if (isGameOver) return;
         isGameOver = true;
+        if (HUDPanel) HUDPanel.SetActive(false);
         if (winPanel) winPanel.SetActive(true);
         EndGameState();
     }
@@ -53,6 +57,11 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f; // Resume the game
         SceneManager.LoadScene("MainMenu");
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 
 }

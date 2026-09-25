@@ -3,6 +3,18 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+   /* [Header("Audio Settings")]
+    public AudioSource audioSource;
+    public AudioClip[] footstepSounds; // Array of footstep sounds to choose from
+    public float walkInterval = 0.5f; // Time interval between footsteps when walking
+    public float sprintInterval = 0.3f; // Time interval between footsteps when sprinting
+    public float crouchInterval = 0.7f; // Time interval between footsteps when crouching
+    public float walkVolume = 0.5f; // Volume for walking footsteps
+    public float sprintVolume = 1f; // Volume for sprinting footsteps
+    public float crouchVolume = 0.3f; // Volume for crouching footstep
+
+    private float stepTimer = 0f; // Timer to track time between footsteps*/
+
     [Header("Movement Settings")]
     public float walkSpeed = 5f;
     public float sprintSpeed = 8f;
@@ -33,6 +45,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        bool isMoving = controller.velocity.magnitude > 0.1f && controller.isGrounded;
+
         transform.position = new Vector3(transform.position.x, 1, transform.position.z);
         // Controller & Mouse Look
         float lookX = InputSystem.actions["Look"].ReadValue<Vector2>().x * lookSensitivity;
@@ -67,6 +81,39 @@ public class PlayerController : MonoBehaviour
         if (controller.isGrounded && velocity.y < 0) velocity.y = -2f;
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
+
+        // Footstep Sounds
+
+       /* float currentInterval = walkInterval;
+        float currentVolume = walkVolume;
+
+        if (isSprinting)
+        {
+            currentInterval = sprintInterval;
+            currentVolume = sprintVolume;
+        }
+        else if (isCrouching)
+        {
+            currentInterval = crouchInterval;
+            currentVolume = crouchVolume;
+        }
+        
+        if (isMoving)
+        {
+            stepTimer -= Time.deltaTime;
+
+            if (stepTimer <= 0f)
+            {
+                PlayRandomFootStep(currentVolume);
+                stepTimer = currentInterval;
+            }
+        }
+        else
+        {
+            stepTimer = 0f;
+        }*/
+
+
     }
 
     public void SetSlow(bool isSlowed)
@@ -88,4 +135,15 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = Vector3.zero; // Reset current velocity
         rb.AddExplosionForce(1000f, explosionPoint, 200f, 100f, ForceMode.Impulse);
     }
+
+    /*public void PlayRandomFootStep(float volume)
+    {
+        if (audioSource != null && footstepSounds.Length > 0)
+        {
+            int randomIndex = Random.Range(0, footstepSounds.Length);
+            audioSource.pitch = Random.Range(0.8f, 1.2f); // Randomize pitch for variety
+            audioSource.PlayOneShot(footstepSounds[randomIndex], volume);
+        }
+    }*/
+
 }
