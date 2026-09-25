@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.Animations;
-
 public class ColliderOpenMouth : MonoBehaviour
 {
 
