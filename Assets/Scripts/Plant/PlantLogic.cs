@@ -215,6 +215,9 @@ public class PlantLogic : MonoBehaviour
             case AbilityType.Explosive:
                 abilityActives[2] = true;
                 break;
+            case AbilityType.Mist:
+                abilityActives[3] = true;
+                break;
         }
 
         // shrink the item object to indicate it has been consumed

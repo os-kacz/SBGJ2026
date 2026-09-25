@@ -17,6 +17,8 @@ public class ItemPickup : MonoBehaviour
 
     private Vector3 newDestination = Vector3.zero;
 
+    private ParticleSystem particleSystem;
+
     void Start()
     {
         if (itemData == null)
@@ -26,6 +28,7 @@ public class ItemPickup : MonoBehaviour
 
         originalScale = gameObject.transform.localScale;
 
+        particleSystem = GetComponentInChildren<ParticleSystem>();
     }
 
     void Update()
@@ -44,10 +47,23 @@ public class ItemPickup : MonoBehaviour
 
     public void OnConsumed(float decayRate, Vector3 destination)
     {
+        DisableParticle();
         currentDecayRate = decayRate;
         beingConsumed = true;
         newDestination = destination;
         originalPosition = gameObject.transform.position;
         gameObject.tag = "Untagged";
+        particleSystem.Stop();
+    }
+
+    public void ActivateParticles()
+    {
+        particleSystem.Play();
+    }
+
+    public void DisableParticle()
+    {
+        particleSystem.Stop();
+        particleSystem.Clear();
     }
 }

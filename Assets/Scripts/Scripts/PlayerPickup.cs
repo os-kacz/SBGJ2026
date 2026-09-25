@@ -43,6 +43,8 @@ public class PlayerPickup : MonoBehaviour
                 PlayPickUpSound();
                heldItem = hit.collider.gameObject;
                heldItemRb = heldItem.GetComponent<Rigidbody>();
+                heldItem.GetComponent<ItemPickup>().DisableParticle();
+
 
                heldItemRb.isKinematic = true;
                heldItemRb.useGravity = false;
@@ -66,6 +68,8 @@ public class PlayerPickup : MonoBehaviour
         heldItemRb.isKinematic = false;
         heldItemRb.useGravity = true;
 
+        heldItem.GetComponent<ItemPickup>().ActivateParticles();
+
         Vector3 throwDirection = transform.forward * throwForce + transform.up / 2f;
 
         heldItemRb.AddForce(throwDirection, ForceMode.Impulse);
@@ -77,6 +81,8 @@ public class PlayerPickup : MonoBehaviour
 
     public void DropItem()
     {
+        heldItem.GetComponent<ItemPickup>().ActivateParticles();
+
         isHoldingItem = false;
         heldItem.transform.SetParent(null);
         heldItemRb.isKinematic = false;
