@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
+    [Header("Audio Settings")]
+    public AudioSource audioSource;
+    public AudioClip damageSound;
 
     [Header("Health Settings")]
     public int maxHealth = 100;
@@ -40,7 +43,8 @@ public class PlayerHealth : MonoBehaviour
     {
         currentHealth -= damage;
         lastDamageTime = Time.time;
-        
+        PlayDamageSound();
+
         if (cameraShake != null)
         {
             cameraShake.TriggerShake();
@@ -90,9 +94,16 @@ public class PlayerHealth : MonoBehaviour
                     currentHealth = maxHealth;
                 nextHealTime = Time.time + healInterval; // Schedule the next heal
             }
+        }  
+
+    }
+
+    public void PlayDamageSound()
+    {
+        if (audioSource != null && damageSound != null)
+        {
+            audioSource.pitch = Random.Range(0.8f, 1.2f); // Randomize pitch for variety
+            audioSource.PlayOneShot(damageSound);
         }
-
-       
-
     }
 }
