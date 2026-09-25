@@ -10,6 +10,11 @@ using UnityEngine.UI;
 public class PlantLogic : MonoBehaviour
 {
 
+    [Header("Audio Settings")]
+    public AudioSource audioSource;
+    public AudioClip eatingSound;
+    public AudioClip growlSound;
+
     // animation and AI
     private NavMeshAgent agent;
     private Animator animator;
@@ -124,6 +129,7 @@ public class PlantLogic : MonoBehaviour
             
             case PlantState.Waiting:
                 agent.SetDestination(gameObject.transform.position);
+                PlayGrowlSound();
 
                 break;
 
@@ -194,6 +200,7 @@ public class PlantLogic : MonoBehaviour
 
         Debug.Log("Eating");
         plantState = PlantState.Eating;
+        PlayEatingSound();
 
         Debug.Log(itemScript.itemData.abilityType);
         // Enum switch case for item types
@@ -207,6 +214,9 @@ public class PlantLogic : MonoBehaviour
                 break;
             case AbilityType.Explosive:
                 abilityActives[2] = true;
+                break;
+            case AbilityType.Mist:
+                abilityActives[3] = true;
                 break;
         }
 
@@ -320,6 +330,24 @@ public class PlantLogic : MonoBehaviour
         if (plantState != PlantState.Eating)
         {
             plantState = PlantState.Idle;
+        }
+    }
+
+    public void PlayEatingSound()
+    {
+        if (audioSource != null && eatingSound != null)
+        {
+            audioSource.pitch = Random.Range(0.8f, 1.2f); // Randomize pitch for variety
+            audioSource.PlayOneShot(eatingSound);
+        }
+    }
+
+    public void PlayGrowlSound()
+    {
+        if (audioSource != null && growlSound != null)
+        {
+            audioSource.pitch = Random.Range(0.8f, 1.2f); // Randomize pitch for variety
+            audioSource.PlayOneShot(growlSound);
         }
     }
 }

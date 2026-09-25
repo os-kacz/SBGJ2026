@@ -3,6 +3,10 @@ using UnityEngine.InputSystem;
 
 public class PlayerPickup : MonoBehaviour
 {
+    [Header("Audio Settings")]
+    public AudioSource audioSource;
+    public AudioClip pickupSound;
+    public AudioClip throwSound;
 
     [Header("References")]
     public Transform holdingPosition;
@@ -13,6 +17,7 @@ public class PlayerPickup : MonoBehaviour
 
     private GameObject heldItem;
     private Rigidbody heldItemRb;
+    private bool isHoldingItem = false;
 
     void Update()
     {
@@ -34,8 +39,12 @@ public class PlayerPickup : MonoBehaviour
         {
            if(hit.collider.CompareTag("Item"))
            {
+                isHoldingItem = true;
+                PlayPickUpSound();
                heldItem = hit.collider.gameObject;
                heldItemRb = heldItem.GetComponent<Rigidbody>();
+                heldItem.GetComponent<ItemPickup>().DisableParticle();
+
 
                heldItemRb.isKinematic = true;
                heldItemRb.useGravity = false;
@@ -54,9 +63,12 @@ public class PlayerPickup : MonoBehaviour
 
     void ThrowItem()
     {
+        PlayThrowSound();
         heldItem.transform.SetParent(null);
         heldItemRb.isKinematic = false;
         heldItemRb.useGravity = true;
+
+        heldItem.GetComponent<ItemPickup>().ActivateParticles();
 
         Vector3 throwDirection = transform.forward * throwForce + transform.up / 2f;
 
@@ -69,6 +81,9 @@ public class PlayerPickup : MonoBehaviour
 
     public void DropItem()
     {
+        heldItem.GetComponent<ItemPickup>().ActivateParticles();
+
+        isHoldingItem = false;
         heldItem.transform.SetParent(null);
         heldItemRb.isKinematic = false;
         heldItemRb.useGravity = true;
@@ -79,6 +94,27 @@ public class PlayerPickup : MonoBehaviour
     public GameObject GetHeldItemData()
     {
         return heldItem;
+    }
+
+    public void PlayPickUpSound()
+    {
+        if (audioSource != null && pickupSound != null)
+        {
+            if (isHoldingItem)
+            {
+                audioSource.pitch = Random.Range(0.8f, 1.2f); // Randomize pitch for variety
+                audioSource.PlayOneShot(pickupSound);
+            }
+        }
+    }
+
+    public void PlayThrowSound()
+    {
+        if (audioSource != null && throwSound != null)
+        {
+            audioSource.pitch = Random.Range(0.8f, 1.2f); // Randomize pitch for variety
+            audioSource.PlayOneShot(throwSound);
+        }
     }
 
 }
